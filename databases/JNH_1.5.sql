@@ -24,13 +24,14 @@ DROP TABLE IF EXISTS `admission_schedule`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `admission_schedule` (
   `admission_id` int(11) NOT NULL AUTO_INCREMENT,
-  `admission_date` date NOT NULL,
-  `admission_time` time NOT NULL,
   `patient_id` varchar(30) DEFAULT NULL,
+  `status` tinyint(4) NOT NULL,
+  `admission_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `remarks` varchar(255) NOT NULL,
   PRIMARY KEY (`admission_id`),
   KEY `fk_Patient_admission` (`patient_id`),
   CONSTRAINT `fk_Patient_admission` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -39,6 +40,7 @@ CREATE TABLE `admission_schedule` (
 
 LOCK TABLES `admission_schedule` WRITE;
 /*!40000 ALTER TABLE `admission_schedule` DISABLE KEYS */;
+INSERT INTO `admission_schedule` VALUES (2,'PTNT-0001',2,'2016-06-27 07:50:11',''),(3,'PTNT-0002',2,'2016-06-27 07:50:18','');
 /*!40000 ALTER TABLE `admission_schedule` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -133,16 +135,14 @@ DROP TABLE IF EXISTS `beds`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `beds` (
-  `bed_id` int(11) NOT NULL,
+  `bed_id` int(11) NOT NULL AUTO_INCREMENT,
   `bed_roomid` int(11) NOT NULL,
-  `bed_maintainance` tinyint(1) NOT NULL,
-  `occupancy_status` tinyint(4) NOT NULL,
+  `bed_maintenance` tinyint(4) NOT NULL DEFAULT '0',
+  `bed_patient` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`bed_id`),
-  UNIQUE KEY `bed_id_UNIQUE` (`bed_id`),
-  KEY `bed_rooms_id_idx` (`bed_roomid`),
-  KEY `fk_beds_occupancy` (`occupancy_status`),
-  CONSTRAINT `fk_beds_occupancy` FOREIGN KEY (`occupancy_status`) REFERENCES `occupancy` (`occupancy_status_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  KEY `fk_bed_pat` (`bed_patient`),
+  CONSTRAINT `fk_bed_pat` FOREIGN KEY (`bed_patient`) REFERENCES `patient` (`patient_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -163,13 +163,14 @@ DROP TABLE IF EXISTS `discharge_schedule`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `discharge_schedule` (
   `discharge_id` int(11) NOT NULL AUTO_INCREMENT,
-  `discharge_date` date NOT NULL,
-  `discharge_time` time NOT NULL,
   `patient_id` varchar(30) DEFAULT NULL,
+  `discharge_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `remarks` varchar(255) NOT NULL,
   PRIMARY KEY (`discharge_id`),
+  UNIQUE KEY `patient_id` (`patient_id`),
   KEY `fk_Patient_discharge` (`patient_id`),
   CONSTRAINT `fk_Patient_discharge` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -178,6 +179,7 @@ CREATE TABLE `discharge_schedule` (
 
 LOCK TABLES `discharge_schedule` WRITE;
 /*!40000 ALTER TABLE `discharge_schedule` DISABLE KEYS */;
+INSERT INTO `discharge_schedule` VALUES (1,'PTNT-0001','2016-06-27 07:50:11',''),(2,'PTNT-0002','2016-06-27 07:50:18','');
 /*!40000 ALTER TABLE `discharge_schedule` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -469,12 +471,9 @@ CREATE TABLE `patient` (
   `patient_status` varchar(255) NOT NULL,
   `patient_id` varchar(30) NOT NULL DEFAULT '0',
   `date_registered` date NOT NULL,
-  `bed_id_fk` int(11) DEFAULT NULL,
   PRIMARY KEY (`patient_id`),
   UNIQUE KEY `email` (`email`),
-  UNIQUE KEY `fk_bedRooms` (`patient_id`),
-  KEY `fk_bed_id_pat` (`bed_id_fk`),
-  CONSTRAINT `fk_bed_id_pat` FOREIGN KEY (`bed_id_fk`) REFERENCES `beds` (`bed_id`)
+  UNIQUE KEY `fk_bedRooms` (`patient_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -484,7 +483,7 @@ CREATE TABLE `patient` (
 
 LOCK TABLES `patient` WRITE;
 /*!40000 ALTER TABLE `patient` DISABLE KEYS */;
-INSERT INTO `patient` VALUES ('lol','lol','lol','lol@gmail.com',12,'M','0000-00-00','mandaluyong','student','qwe','qwe','qwe',88989,'lol','lol','PTNT-0001','2016-06-24',NULL),('Revilla','Karl Angelo','Rey','karlangelorevilla@gmail.com',19,'M','1997-03-18','Quezon City','Student','Catholic','Filipino','Sauyo',4560186,'09425491361','','PTNT-0002','2016-06-24',NULL),('Cadiz','Johnel','Jeje','',20,'M','1996-04-20','Quezon City','Student','Catholic','Filipino','Timog',1234567,'09999999999','0','PTNT-0003','2016-06-24',NULL),('Tan','Liz Arabelle','Trinidad','lizarabelletan@gmail.com',20,'F','1996-04-09','Manila','Student','Catholic','Filipino','Talipapa',3580757,'09228884552','0','PTNT-0005','2016-06-24',NULL),('Tan','Lei Angeli','Trinidad','leitan@gmail.com',15,'F','2001-06-12','Dubai','Student','Catholic','Filipino','Talipapa',3580757,'09228884552','0','PTNT-0006','2016-06-24',NULL),('Tan','Lisette Ann','Trinidad','liantan@gmail.com',22,'F','1994-09-22','Manila','Teacher','Catholic','Filipino','Talipapa',3580757,'09228884552','0','PTNT-0007','2016-06-24',NULL),('Revilla','Karl','Rey','karlalexisrevilla@gmail.com',12,'M','2003-10-28','Quezon City','Student','Catholic','Filipino','Sauyo',4560186,'09111111111','0','PTNT-0008','2016-06-24',NULL),('Rey','Martin Ian','Cagungun','martinianrey@gmail.com',11,'M','2004-07-08','Quezon City','Student','Catholic','Filipino','Sauyo',4560186,'09222222222','0','PTNT-0009','2016-06-24',NULL),('Rey','Marie Margarette','Cagungun','margarette@gmail.com',13,'F','2001-10-15','Quezon City','Student','Catholic','Filipino','Sauyo',4560186,'09333333333','0','PTNT-0010','2016-06-24',NULL),('Tantoco','Abbygail','Tan','abbygail@gmail.com',16,'F','2000-10-15','Quezon City','Student','Catholic','Filipino','Talipapa',3580757,'09444444444','0','PTNT-0011','2016-06-24',NULL),('Tantoco','Binky','Tan','binky@gmail.com',21,'F','1995-10-25','Quezon City','Teacher','Catholic','Filipino','Talipapa',3580757,'09555555555','0','PTNT-0012','2016-06-24',NULL),('Rey','Margarette','Cagungun','margarette_1015@yahoo.com',13,'F','1995-10-15','Quezon City','Teacher','Catholic','Filipino','Bagbag Novaliches Quezon City',4560186,'09391910650','0','PTNT-0013','2016-06-25',NULL);
+INSERT INTO `patient` VALUES ('lol','lol','lol','lol@gmail.com',12,'M','0000-00-00','mandaluyong','student','qwe','qwe','qwe',88989,'lol','lol','PTNT-0001','2016-06-24'),('Revilla','Karl Angelo','Rey','karlangelorevilla@gmail.com',19,'M','1997-03-18','Quezon City','Student','Catholic','Filipino','Sauyo',4560186,'09425491361','','PTNT-0002','2016-06-24'),('Cadiz','Johnel','Jeje','',20,'M','1996-04-20','Quezon City','Student','Catholic','Filipino','Timog',1234567,'09999999999','0','PTNT-0003','2016-06-24'),('Tan','Liz Arabelle','Trinidad','lizarabelletan@gmail.com',20,'F','1996-04-09','Manila','Student','Catholic','Filipino','Talipapa',3580757,'09228884552','0','PTNT-0005','2016-06-24'),('Tan','Lei Angeli','Trinidad','leitan@gmail.com',15,'F','2001-06-12','Dubai','Student','Catholic','Filipino','Talipapa',3580757,'09228884552','0','PTNT-0006','2016-06-24'),('Tan','Lisette Ann','Trinidad','liantan@gmail.com',22,'F','1994-09-22','Manila','Teacher','Catholic','Filipino','Talipapa',3580757,'09228884552','0','PTNT-0007','2016-06-24'),('Revilla','Karl','Rey','karlalexisrevilla@gmail.com',12,'M','2003-10-28','Quezon City','Student','Catholic','Filipino','Sauyo',4560186,'09111111111','0','PTNT-0008','2016-06-24'),('Rey','Martin Ian','Cagungun','martinianrey@gmail.com',11,'M','2004-07-08','Quezon City','Student','Catholic','Filipino','Sauyo',4560186,'09222222222','0','PTNT-0009','2016-06-24'),('Rey','Marie Margarette','Cagungun','margarette@gmail.com',13,'F','2001-10-15','Quezon City','Student','Catholic','Filipino','Sauyo',4560186,'09333333333','0','PTNT-0010','2016-06-24'),('Tantoco','Abbygail','Tan','abbygail@gmail.com',16,'F','2000-10-15','Quezon City','Student','Catholic','Filipino','Talipapa',3580757,'09444444444','0','PTNT-0011','2016-06-24'),('Tantoco','Binky','Tan','binky@gmail.com',21,'F','1995-10-25','Quezon City','Teacher','Catholic','Filipino','Talipapa',3580757,'09555555555','0','PTNT-0012','2016-06-24'),('Rey','Margarette','Cagungun','margarette_1015@yahoo.com',13,'F','1995-10-15','Quezon City','Teacher','Catholic','Filipino','Bagbag Novaliches Quezon City',4560186,'09391910650','0','PTNT-0013','2016-06-25');
 /*!40000 ALTER TABLE `patient` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -546,16 +545,19 @@ DROP TABLE IF EXISTS `pharmacy_audit`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pharmacy_audit` (
-  `phar_item` int(11) NOT NULL,
+  `phar_item` int(11) NOT NULL AUTO_INCREMENT,
   `phar_user_id` int(11) NOT NULL,
+  `phar_patient` varchar(30) DEFAULT NULL,
   `quant_requested` int(11) NOT NULL,
   `total_price` float(10,2) NOT NULL,
-  `date_req` date NOT NULL,
+  `date_req` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`phar_item`,`phar_user_id`),
-  KEY `fk_phar_user` (`phar_user_id`),
-  CONSTRAINT `fk_phar_item` FOREIGN KEY (`phar_item`) REFERENCES `pharmacy_inventory` (`item_id`),
-  CONSTRAINT `fk_phar_user` FOREIGN KEY (`phar_user_id`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  KEY `phar_user_id` (`phar_user_id`),
+  KEY `fk_Pat_pharm` (`phar_patient`),
+  CONSTRAINT `fk_Pat_pharm` FOREIGN KEY (`phar_patient`) REFERENCES `patient` (`patient_id`),
+  CONSTRAINT `fk_item_id` FOREIGN KEY (`phar_item`) REFERENCES `pharmacy_inventory` (`item_id`),
+  CONSTRAINT `fk_user_id` FOREIGN KEY (`phar_user_id`) REFERENCES `users` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -575,7 +577,7 @@ DROP TABLE IF EXISTS `pharmacy_inventory`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pharmacy_inventory` (
-  `item_id` int(11) NOT NULL,
+  `item_id` int(11) NOT NULL AUTO_INCREMENT,
   `item_name` varchar(255) NOT NULL,
   `item_description` varchar(255) NOT NULL,
   `item_quantity` int(11) NOT NULL,
@@ -892,4 +894,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-06-27 13:42:21
+-- Dump completed on 2016-06-27 16:28:16
