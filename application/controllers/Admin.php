@@ -486,6 +486,10 @@
       $this->load->view('administrator/admitting/admiter.php', $data);
       $this->load->view('administrator/includes/footer.php');
     }
+
+    function tanginanakakagago(){
+      
+    }
     /*=========================================================================================================================*/
     function logout(){
       $this->session->sess_destroy();
