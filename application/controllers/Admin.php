@@ -16,6 +16,7 @@
     }
 //TRY LANG (SIIWAY)
 //ETO ISA PANG TRY PARA MALUPET
+//eto pa try ko gamit atom
     function index(){
       $this->load->view('administrator/includes/header.php');
       $this->load->view('administrator/index.php');
