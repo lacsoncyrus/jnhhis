@@ -15,6 +15,7 @@
       }
     }
 //TRY LANG (SIIWAY)
+//ETO ISA PANG TRY PARA MALUPET
     function index(){
       $this->load->view('administrator/includes/header.php');
       $this->load->view('administrator/index.php');
