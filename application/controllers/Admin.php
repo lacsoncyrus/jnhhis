@@ -14,7 +14,7 @@
         redirect(base_url());
       }
     }
-
+//TRY LANG (SIIWAY)
     function index(){
       $this->load->view('administrator/includes/header.php');
       $this->load->view('administrator/index.php');
